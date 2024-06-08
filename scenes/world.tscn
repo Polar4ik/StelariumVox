@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://pejovvy2eq6f"]
+
+[sub_resource type="Sky" id="Sky_mv0rq"]
+
+[sub_resource type="Environment" id="Environment_jlc53"]
+background_mode = 1
+background_color = Color(0.0313726, 0.0313726, 0.0627451, 1)
+sky = SubResource("Sky_mv0rq")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_156ep"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_eurtv"]
+radius = 12.5
+height = 25.0
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_jlc53")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1000)
+material_override = SubResource("StandardMaterial3D_156ep")
+mesh = SubResource("SphereMesh_eurtv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.907499, -0.0685189, 0.414428, 0, 0.986606, 0.163119, -0.420054, -0.148031, 0.895344, 0, 3.98366, 9.48877)

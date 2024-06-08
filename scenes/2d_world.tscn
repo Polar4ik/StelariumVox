@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=3 uid="uid://qttxvqyjgpjp"]
+
+[ext_resource type="Script" path="res://scripts/2d_move.gd" id="1_qvdrg"]
+[ext_resource type="Texture2D" uid="uid://dqp42yhpk6epc" path="res://assets/sprites/player.png" id="2_hng26"]
+[ext_resource type="Texture2D" uid="uid://cw5e0gt8ieq0p" path="res://assets/sprites/planet.png" id="3_xffs3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rldb5"]
+size = Vector2(32, 32)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xlyu2"]
+radius = 111.072
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_anf5f"]
+radius = 32.0624
+
+[node name="2DWorld" type="Node2D"]
+script = ExtResource("1_qvdrg")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(160, 216)
+rotation = 1.5708
+
+[node name="MainCollision" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_rldb5")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player"]
+texture = ExtResource("2_hng26")
+
+[node name="CheckPlanet" type="Area2D" parent="Player"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CheckPlanet"]
+shape = SubResource("CircleShape2D_xlyu2")
+debug_color = Color(0.8481, 0.368116, 0.19584, 0.42)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(0.5, 0.5)
+
+[node name="Planet1" type="StaticBody2D" parent="." groups=["planet"]]
+position = Vector2(1160, 216)
+collision_layer = 2
+
+[node name="Sprite" type="Sprite2D" parent="Planet1"]
+self_modulate = Color(1, 0.443137, 0.486275, 1)
+scale = Vector2(2, 2)
+texture = ExtResource("3_xffs3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Planet1"]
+shape = SubResource("CircleShape2D_anf5f")
+
+[node name="Label" type="Label" parent="Planet1"]
+offset_left = -12.0
+offset_top = -77.0
+offset_right = 15.0
+offset_bottom = -32.0
+pivot_offset = Vector2(14, 45)
+theme_override_font_sizes/font_size = 32
+text = "Ei"
+horizontal_alignment = 1
+
+[connection signal="body_entered" from="Player/CheckPlanet" to="." method="_on_check_planet_body_entered"]
+[connection signal="body_exited" from="Player/CheckPlanet" to="." method="_on_check_planet_body_exited"]

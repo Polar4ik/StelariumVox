@@ -1,0 +1,75 @@
+[gd_scene load_steps=6 format=3 uid="uid://dwpnjuhvrlmwc"]
+
+[ext_resource type="PackedScene" uid="uid://pejovvy2eq6f" path="res://scenes/world.tscn" id="1_ksv5w"]
+[ext_resource type="Script" path="res://scripts/pioner_controller.gd" id="2_gqvfp"]
+[ext_resource type="PackedScene" uid="uid://qttxvqyjgpjp" path="res://scenes/2d_world.tscn" id="3_pprbw"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_t8ull"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ug6pq"]
+
+[node name="Game" type="Node"]
+
+[node name="World" parent="." instance=ExtResource("1_ksv5w")]
+
+[node name="Pioner" type="CharacterBody3D" parent="."]
+script = ExtResource("2_gqvfp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pioner"]
+mesh = SubResource("BoxMesh_t8ull")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pioner"]
+shape = SubResource("BoxShape3D_ug6pq")
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="Pioner"]
+
+[node name="Control" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Control/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="SubViewport" type="SubViewport" parent="Control/VBoxContainer/HBoxContainer/SubViewportContainer"]
+handle_input_locally = false
+render_target_update_mode = 0
+
+[node name="Camera3D" type="Camera3D" parent="Control/VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport"]
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+
+[node name="LeftButton" type="Button" parent="Control/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Left"
+
+[node name="RightButton" type="Button" parent="Control/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Right"
+
+[node name="2DWorld" parent="." instance=ExtResource("3_pprbw")]
+
+[connection signal="button_down" from="Control/VBoxContainer/HBoxContainer2/LeftButton" to="Pioner" method="_on_left_button_button_down"]
+[connection signal="button_down" from="Control/VBoxContainer/HBoxContainer2/RightButton" to="Pioner" method="_on_right_button_button_down"]
