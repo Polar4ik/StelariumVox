@@ -1,19 +1,24 @@
 extends Node2D
 
 var trg_pos := Vector2.ZERO
-var isnt_mov := true
+var trg_point := Vector2.ZERO
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("LBMClick") and isnt_mov:
+	G.pioner_position = $Player.position
+	
+	if Input.is_action_just_pressed("LBMClick"):
 		trg_pos = get_global_mouse_position()
 	
-	if Input.is_action_just_pressed("test_mov") and isnt_mov:
-		$Player.velocity = -trg_pos.direction_to($Player.position) * 50
-		isnt_mov = false
+	if Input.is_action_just_pressed("mov") and trg_pos != trg_point:
+		trg_point = trg_pos
+		$Player.velocity = $Player.position.direction_to(trg_point) * 50
+		G.is_move = true
+		$Player/AudioStreamPlayer2D.play()
 	
-	if trg_pos.distance_to($Player.position) <= 10:
+	if trg_point.distance_to($Player.position) <= 10:
 		$Player.velocity = Vector2.ZERO
-		isnt_mov = true
+		G.is_move = false
+		$Player/AudioStreamPlayer2D.stop()
 	
 	queue_redraw()
 
@@ -24,9 +29,18 @@ func _draw() -> void:
 	draw_line($Player.position, trg_pos, Color.WHITE, 1.0, true)
 
 func _on_check_planet_body_entered(body: Node2D) -> void:
-	if body.is_in_group("planet"):
-		G.can_test = true
+	G.can_test = true
+	G.planet = body.planet_name
+	E.planet_entered.emit()
+	
 
-func _on_check_planet_body_exited(body: Node2D) -> void:
-	if body.is_in_group("planet"):
-		G.can_test = false
+func _on_check_planet_body_exited(_body: Node2D) -> void:
+	G.can_test = false
+
+
+func _on_camera_button_button_down() -> void:
+	E.move_close.emit()
+
+
+func _on_info_button_button_down() -> void:
+	E.move_close.emit()

@@ -1,12 +1,437 @@
-[gd_scene load_steps=6 format=3 uid="uid://dwpnjuhvrlmwc"]
+[gd_scene load_steps=46 format=3 uid="uid://dwpnjuhvrlmwc"]
 
 [ext_resource type="PackedScene" uid="uid://pejovvy2eq6f" path="res://scenes/world.tscn" id="1_ksv5w"]
 [ext_resource type="Script" path="res://scripts/pioner_controller.gd" id="2_gqvfp"]
+[ext_resource type="PackedScene" uid="uid://dkfnk4kmdw4cl" path="res://assets/models/pioner.glb" id="3_8wdby"]
 [ext_resource type="PackedScene" uid="uid://qttxvqyjgpjp" path="res://scenes/2d_world.tscn" id="3_pprbw"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_t8ull"]
+[ext_resource type="Texture2D" uid="uid://dhrj6trnpj3gi" path="res://assets/sprites/2d/checkmark.png" id="3_yjxf7"]
+[ext_resource type="FontFile" uid="uid://cshch2jsn18bi" path="res://assets/fonts/Vollkorn-VariableFont_wght.ttf" id="4_vaio2"]
+[ext_resource type="AudioStream" uid="uid://dgv80u6qer6yr" path="res://assets/sounds/test_audio/photo_printer.ogg" id="5_8xrdd"]
+[ext_resource type="Texture2D" uid="uid://d4mum7tkb8v4m" path="res://assets/photo/third_report/Pioneer_10-11_-_p53_-_fx (Телефон).jpg" id="5_tnv83"]
+[ext_resource type="Texture2D" uid="uid://cr8q3ep57o2mx" path="res://assets/photo/third_report/Pioneer_10-11_-_P57a_-_fx (Телефон).jpg" id="6_ddumb"]
+[ext_resource type="Texture2D" uid="uid://drpgakrjkxq0p" path="res://assets/sprites/2d/task_process1.png" id="7_kc6u4"]
+[ext_resource type="Texture2D" uid="uid://8t0nawlqk320" path="res://assets/photo/third_report/NASM-NASM2016-00083 (Телефон).jpg" id="7_laplq"]
+[ext_resource type="AudioStream" uid="uid://cjqmaf7fvx4c6" path="res://assets/sounds/test_audio/plasma.ogg" id="7_q7a4g"]
+[ext_resource type="Texture2D" uid="uid://dscpwe7sfedud" path="res://assets/photo/fourth_report/tumblr_f64162c73ab40fedd3d517c8da675fd8_43483e64_500 (Телефон).jpg" id="7_wwu35"]
+[ext_resource type="AudioStream" uid="uid://b71tkvg3f5uy3" path="res://assets/sounds/test_audio/signal.ogg" id="8_4ih4p"]
+[ext_resource type="Texture2D" uid="uid://6sx8sqvsk7x6" path="res://assets/sprites/2d/task_process2.png" id="8_pc0lb"]
+[ext_resource type="Texture2D" uid="uid://brqcc7bb6ibe7" path="res://assets/photo/fourth_report/photo_2024-06-09_00-30-14 (Телефон).jpg" id="8_vaqke"]
+[ext_resource type="AudioStream" uid="uid://bmpbrqqblo3dp" path="res://assets/sounds/test_audio/radiation.ogg" id="9_bystb"]
+[ext_resource type="Texture2D" uid="uid://bgnxfey2mnyti" path="res://assets/photo/fourth_report/photo_2024-06-09_00-29-35 (Телефон).jpg" id="9_pic1i"]
+[ext_resource type="Texture2D" uid="uid://e5jw3mnv0o5q" path="res://assets/photo/fourth_report/photo_2024-06-09_00-29-09 (Телефон).jpg" id="10_mkogq"]
+[ext_resource type="Texture2D" uid="uid://c0gvdjwl8lp85" path="res://assets/photo/fourth_report/photo_2024-06-09_00-28-37 (Телефон).jpg" id="11_5cr2j"]
+[ext_resource type="Texture2D" uid="uid://bclcij3761ej6" path="res://assets/photo/fourth_report/photo_2024-06-09_00-27-10 (Телефон).jpg" id="12_gyy81"]
+[ext_resource type="Texture2D" uid="uid://b7p6wvg1a2fgn" path="res://assets/photo/fourth_report/photo_2024-06-09_00-27-09 (Телефон).jpg" id="13_opfkt"]
+[ext_resource type="Texture2D" uid="uid://du3jod406b44b" path="res://assets/photo/fifth_report/cherep (Пользовательское).png" id="14_dtipv"]
+[ext_resource type="AudioStream" uid="uid://byymm7i8u71mi" path="res://assets/sounds/ambients/ambient1.ogg" id="18_xehno"]
+[ext_resource type="AudioStream" uid="uid://kk2kui5c7pj1" path="res://assets/sounds/ambients/ambient2.ogg" id="19_tgn5r"]
+[ext_resource type="AudioStream" uid="uid://dbn8wc1p2o1lb" path="res://assets/sounds/ambients/ambient3.ogg" id="20_4ulv2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ug6pq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qen5n"]
+
+[sub_resource type="Theme" id="Theme_5g4wu"]
+Button/fonts/font = ExtResource("4_vaio2")
+Button/styles/focus = SubResource("StyleBoxEmpty_qen5n")
+
+[sub_resource type="GDScript" id="GDScript_v55mh"]
+script/source = "extends VBoxContainer
+
+enum TasksE {
+	Photo,
+	Plasm,
+	Signals,
+	Audio,
+	Radiation
+}
+
+const TASKS := [TasksE.Photo, TasksE.Plasm, TasksE.Signals, TasksE.Audio, TasksE.Radiation]
+var tasks := []
+
+var selected_task := TasksE.Photo
+var task_num := 0
+
+var task_process := false
+
+var task_has_created := false
+
+func _ready() -> void:
+	E.planet_entered.connect(create_tasks)
+
+func _process(_delta: float) -> void:
+	if %CamRayCast.is_colliding() and tasks.has(TasksE.Photo) and task_process == false:
+		$PhotoTask/PhotoButton.disabled = false
+	else: 
+		$PhotoTask/PhotoButton.disabled = true
+	
+	if tasks.size() == 0:
+		if task_has_created:
+			$\"../../../ButtonContainer/HBoxContainer/InfoLabel\".show()
+		
+		if G.planet == G.Planets.Ei:
+			%ReportButton1.show()
+		elif G.planet == G.Planets.Kelme:
+			%ReportButton2.show()
+		elif G.planet == G.Planets.Keli:
+			%ReportButton3.show()
+		elif G.planet == G.Planets.Ila:
+			%ReportButton4.show()
+		elif G.planet == G.Planets.Sazema:
+			%ReportButton5.show()
+		task_has_created = false
+
+func _on_photo_button_button_down() -> void:
+	start_task(TasksE.Photo, 0, $PhotoTask/PhotoButton.get_path())
+	
+	$PhotoTask/PhotoButton/PhtoAudio.play()
+
+func _on_plasm_button_button_down() -> void:
+	start_task(TasksE.Plasm, 1, $PlasmTask/PlasmButton.get_path())
+	$PlasmTask/PlasmButton/PlasmAudio.play()
+
+func _on_signal_button_button_down() -> void:
+	start_task(TasksE.Signals, 2, $SiganlTask/SignalButton.get_path())
+	$SiganlTask/SignalButton/SignalAudio.play()
+
+func _on_audio_button_button_down() -> void:
+	start_task(TasksE.Audio, 3, $AudioTask/AudioButton.get_path())
+	
+	if G.planet == G.Planets.Ei:
+		$AudioTask/AudioButton/AudioPlayer.stream = preload(\"res://assets/sounds/planet_audio/ei_sound.ogg\")
+	elif G.planet == G.Planets.Kelme:
+		$AudioTask/AudioButton/AudioPlayer.stream = preload(\"res://assets/sounds/planet_audio/kelme_sound.ogg\")
+	elif G.planet == G.Planets.Keli:
+		$AudioTask/AudioButton/AudioPlayer.stream = preload(\"res://assets/sounds/planet_audio/keli_sound.ogg\")
+	elif G.planet == G.Planets.Ila:
+		$AudioTask/AudioButton/AudioPlayer.stream = preload(\"res://assets/sounds/planet_audio/ila_sound.ogg\")
+	elif G.planet == G.Planets.Sazema:
+		$AudioTask/AudioButton/AudioPlayer.stream = preload(\"res://assets/sounds/planet_audio/sazema_sound.ogg\")
+	
+	$AudioTask/AudioButton/AudioPlayer.play()
+
+func _on_radiation_button_button_down() -> void:
+	start_task(TasksE.Radiation, 4, $RadiationTask/RadiationButton.get_path())
+	$RadiationTask/RadiationButton/RadiationPlayer.play()
+
+func start_timer() -> void:
+	$ProcessTimer.start()
+
+func _on_process_timer_timeout() -> void:
+	tasks.erase(selected_task)
+	get_child(task_num).get_child(2).show()
+	get_child(task_num).get_child(1).hide()
+	enable_tasks()
+	
+	task_process = false
+
+func start_task(task: TasksE, num: int, btn: NodePath) -> void:
+	if tasks.has(task):
+		get_node(btn).get_parent().get_child(1).show()
+		task_process = true
+		selected_task = task
+		get_node(btn).disabled = true
+		task_num = num
+		start_timer()
+		
+		disable_tasks()
+
+func create_tasks() -> void:
+	if G.can_test:
+		tasks = TASKS.duplicate()
+		
+		for i in get_children():
+			for j in i.get_children():
+				if j is Button:
+					j.disabled = false
+				if j is TextureRect:
+					j.hide()
+		
+		task_has_created = true
+
+func disable_tasks() -> void:
+	for i in get_children():
+		for j in i.get_children():
+			if j is Button:
+				j.disabled = true
+
+func enable_tasks() -> void:
+	#for i in get_children():
+		#for j in i.get_children():
+			#if j is Button:
+				#j.disabled = false
+	
+	if tasks.has(TasksE.Plasm):
+		$PlasmTask/PlasmButton.disabled = false
+	if tasks.has(TasksE.Signals):
+		$SiganlTask/SignalButton.disabled = false
+	if tasks.has(TasksE.Audio):
+		$AudioTask/AudioButton.disabled = false
+	if tasks.has(TasksE.Radiation):
+		$RadiationTask/RadiationButton.disabled = false
+"
+
+[sub_resource type="Animation" id="Animation_csn31"]
+resource_name = "Process"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Process:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("7_kc6u4"), ExtResource("8_pc0lb")]
+}
+
+[sub_resource type="Animation" id="Animation_03udm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Process:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_kc6u4")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mu1mi"]
+_data = {
+"Process": SubResource("Animation_csn31"),
+"RESET": SubResource("Animation_03udm")
+}
+
+[sub_resource type="Shader" id="Shader_w8k61"]
+code = "shader_type canvas_item;
+ 
+uniform float img_prc : hint_range(0.0, 1.0, 0.01);
+uniform vec4 blank_color : source_color;
+uniform int image_columns = 4;
+
+void fragment() {
+	int total_image_blocks = image_columns * image_columns;
+ 
+	int x_pos = int(UV.x * float(image_columns));
+	int y_pos = int(UV.y * float(image_columns));
+	int current_index = y_pos * image_columns + x_pos;
+ 
+	bool section_loaded = img_prc > float(current_index) / float(total_image_blocks);
+	if (section_loaded)
+		COLOR = texture(TEXTURE, UV);
+	else
+		COLOR = blank_color;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_046kp"]
+shader = SubResource("Shader_w8k61")
+shader_parameter/img_prc = 1.0
+shader_parameter/blank_color = Color(0, 0, 0.309804, 1)
+shader_parameter/image_columns = 4
+
+[sub_resource type="GDScript" id="GDScript_gnffv"]
+script/source = "extends HBoxContainer
+
+func disable_all_contents() -> void:
+	for i in $Contents.get_children():
+		i.hide()
+
+func _on_report_button_button_down() -> void:
+	disable_all_contents()
+	$Contents/Contents1.show()
+	E.task_opened.emit()
+
+func _on_report_button_2_button_down() -> void:
+	disable_all_contents()
+	$Contents/Contents2.show()
+	E.task_opened.emit()
+
+func _on_report_button_3_button_down() -> void:
+	disable_all_contents()
+	$Contents/Contents3.show()
+	E.task_opened.emit()
+
+func _on_report_button_4_button_down() -> void:
+	disable_all_contents()
+	$Contents/Contents4.show()
+	E.task_opened.emit()
+
+func _on_report_button_5_button_down() -> void:
+	disable_all_contents()
+	$Contents/Contents5.show()
+	E.task_opened.emit()
+"
+
+[sub_resource type="GDScript" id="GDScript_sv75e"]
+script/source = "extends Button
+
+
+func _on_button_down() -> void:
+	$SceneTwoTimer.start()
+	
+
+
+func _on_scene_two_timer_timeout() -> void:
+	get_tree().change_scene_to_file(\"res://scenes/end.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_b1cvt"]
+script/source = "extends VBoxContainer
+
+func _process(_delta: float) -> void:
+	if G.is_move:
+		for i in get_children():
+			if i is Button:
+				i.disabled = true
+			else:
+				for j in i.get_children():
+					if j is Button:
+						j.disabled = true
+	else:
+		for i in get_children():
+			if i is Button:
+				i.disabled = false
+			else:
+				for j in i.get_children():
+					if j is Button:
+						j.disabled = false
+
+func _on_camera_button_button_down() -> void:
+	for i in get_children():
+		if i is Button:
+			i.disabled = false
+		else:
+			for j in i.get_children():
+				if j is Button:
+					j.disabled = false
+	
+	$CameraButton.disabled = true
+	
+	$\"../CameraContainer\".show()
+	$\"../InfoContainer\".hide()
+	$\"../../../../2DWorld\".hide()
+
+func _on_move_button_button_down() -> void:
+	for i in get_children():
+		if i is Button:
+			i.disabled = false
+		else:
+			for j in i.get_children():
+				if j is Button:
+					j.disabled = false
+	
+	$MoveButton.disabled = true
+	
+	$\"../CameraContainer\".hide()
+	$\"../InfoContainer\".hide()
+	$\"../../../../2DWorld\".show()
+
+func _on_signal_button_button_down() -> void:
+	for i in get_children():
+		if i is Button:
+			i.disabled = false
+		else:
+			for j in i.get_children():
+				if j is Button:
+					j.disabled = false
+	
+	$HBoxContainer/InfoButton.disabled = true
+	
+	$\"../CameraContainer\".hide()
+	$\"../InfoContainer\".show()
+	$\"../../../../2DWorld\".hide()
+"
+
+[sub_resource type="GDScript" id="GDScript_pyk0i"]
+script/source = "extends Button
+
+var set_dis := false
+
+func _ready() -> void:
+	E.planet_entered.connect(func():
+		disabled = true
+		set_dis = true)
+	E.task_opened.connect(func():
+		disabled = false
+		set_dis = false)
+
+func _process(_delta: float) -> void:
+	if set_dis or G.is_move:
+		disabled = true
+	else:
+		disabled = false
+
+
+func _on_button_down() -> void:
+	E.move_open.emit()
+
+"
+
+[sub_resource type="GDScript" id="GDScript_qar06"]
+script/source = "extends HBoxContainer
+
+
+func _on_info_button_button_down() -> void:
+	$InfoLabel.hide()
+"
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_yyjah"]
+streams_count = 2
+stream_0/stream = ExtResource("19_tgn5r")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("20_4ulv2")
+stream_1/weight = 1.0
+
+[sub_resource type="GDScript" id="GDScript_ae0wf"]
+script/source = "extends AudioStreamPlayer
+
+
+func _on_timer_timeout() -> void:
+	play()
+"
+
+[sub_resource type="Animation" id="Animation_p0ny6"]
+resource_name = "Enter"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_oqg6w"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_q7drq"]
+_data = {
+"Enter": SubResource("Animation_p0ny6"),
+"RESET": SubResource("Animation_oqg6w")
+}
 
 [node name="Game" type="Node"]
 
@@ -15,61 +440,511 @@
 [node name="Pioner" type="CharacterBody3D" parent="."]
 script = ExtResource("2_gqvfp")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Pioner"]
-mesh = SubResource("BoxMesh_t8ull")
+[node name="pioner" parent="Pioner" instance=ExtResource("3_8wdby")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Pioner"]
 shape = SubResource("BoxShape3D_ug6pq")
 
 [node name="RemoteTransform3D" type="RemoteTransform3D" parent="Pioner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -0.22974)
+remote_path = NodePath("../../CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/PanelContainer/Camera/SubViewport/Camera3D")
 
-[node name="Control" type="Control" parent="."]
-visible = false
+[node name="CamRayCast" type="RayCast3D" parent="Pioner/RemoteTransform3D"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -300)
+collision_mask = 2
+debug_shape_custom_color = Color(0.976471, 0, 0.619608, 0.172549)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Main" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_5g4wu")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Main"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer"]
+[node name="CameraContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer"]
+layout_mode = 2
+
+[node name="CameraAndButtons" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 3
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="Control/VBoxContainer/HBoxContainer"]
+[node name="ButtonsContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 6
+script = SubResource("GDScript_v55mh")
+
+[node name="PhotoTask" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
 layout_mode = 2
 
-[node name="SubViewport" type="SubViewport" parent="Control/VBoxContainer/HBoxContainer/SubViewportContainer"]
+[node name="PhotoButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+disabled = true
+text = "TASK_PHOTO"
+
+[node name="PhtoAudio" type="AudioStreamPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask/PhotoButton"]
+stream = ExtResource("5_8xrdd")
+
+[node name="Process" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("7_kc6u4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask/Process"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_mu1mi")
+}
+autoplay = "Process"
+
+[node name="Checkmark" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yjxf7")
+
+[node name="PlasmTask" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
+layout_mode = 2
+
+[node name="PlasmButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+disabled = true
+text = "TASK_PLASMA"
+
+[node name="PlasmAudio" type="AudioStreamPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask/PlasmButton"]
+stream = ExtResource("7_q7a4g")
+volume_db = -7.496
+
+[node name="Process" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("7_kc6u4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask/Process"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_mu1mi")
+}
+autoplay = "Process"
+
+[node name="Checkmark" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yjxf7")
+
+[node name="SiganlTask" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
+layout_mode = 2
+
+[node name="SignalButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+disabled = true
+text = "TASK_SIGNAL"
+
+[node name="SignalAudio" type="AudioStreamPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask/SignalButton"]
+stream = ExtResource("8_4ih4p")
+
+[node name="Process" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("7_kc6u4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask/Process"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_mu1mi")
+}
+autoplay = "Process"
+
+[node name="Checkmark" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yjxf7")
+
+[node name="AudioTask" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
+layout_mode = 2
+
+[node name="AudioButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+disabled = true
+text = "TASK_AUDIO"
+
+[node name="AudioPlayer" type="AudioStreamPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask/AudioButton"]
+volume_db = 4.685
+
+[node name="Process" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("7_kc6u4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask/Process"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_mu1mi")
+}
+autoplay = "Process"
+
+[node name="Checkmark" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yjxf7")
+
+[node name="RadiationTask" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
+layout_mode = 2
+
+[node name="RadiationButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+disabled = true
+text = "TASK_RADIATION"
+
+[node name="RadiationPlayer" type="AudioStreamPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask/RadiationButton"]
+stream = ExtResource("9_bystb")
+volume_db = -9.37
+
+[node name="Process" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("7_kc6u4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask/Process"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_mu1mi")
+}
+autoplay = "Process"
+
+[node name="Checkmark" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask"]
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yjxf7")
+
+[node name="ProcessTimer" type="Timer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer"]
+wait_time = 10.0
+one_shot = true
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons"]
+layout_mode = 2
+
+[node name="Camera" type="SubViewportContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/PanelContainer"]
+material = SubResource("ShaderMaterial_046kp")
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="SubViewport" type="SubViewport" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/PanelContainer/Camera"]
 handle_input_locally = false
-render_target_update_mode = 0
+render_target_update_mode = 4
 
-[node name="Camera3D" type="Camera3D" parent="Control/VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport"]
+[node name="Camera3D" type="Camera3D" parent="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/PanelContainer/Camera/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -0.22974)
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Control/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/CameraContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 3
 
-[node name="LeftButton" type="Button" parent="Control/VBoxContainer/HBoxContainer2"]
-custom_minimum_size = Vector2(60, 0)
+[node name="LeftButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Left"
+text = "ROTATE_LEFT"
 
-[node name="RightButton" type="Button" parent="Control/VBoxContainer/HBoxContainer2"]
-custom_minimum_size = Vector2(60, 0)
+[node name="RightButton" type="Button" parent="CanvasLayer/Main/MarginContainer/CameraContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Right"
+text = "ROTATE_RIGHT"
+
+[node name="InfoContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer"]
+visible = false
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_vertical = 3
+script = SubResource("GDScript_gnffv")
+
+[node name="Control" type="Control" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="List" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List"]
+layout_mode = 2
+
+[node name="ReportButton5" type="Button" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "REPORT_5"
+script = SubResource("GDScript_sv75e")
+
+[node name="SceneTwoTimer" type="Timer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5"]
+wait_time = 0.5
+
+[node name="ReportButton4" type="Button" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "REPORT_4"
+
+[node name="ReportButton3" type="Button" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "REPORT_3"
+
+[node name="ReportButton2" type="Button" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "REPORT_2"
+
+[node name="ReportButton1" type="Button" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "REPORT_1"
+
+[node name="Contents" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Contents1" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents1"]
+layout_mode = 2
+text = "REPORT_1_DESC"
+
+[node name="Contents2" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents2"]
+layout_mode = 2
+text = "REPORT_2_DESC"
+
+[node name="Contents3" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents"]
+visible = false
+custom_minimum_size = Vector2(450, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_tnv83")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("6_ddumb")
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("7_laplq")
+
+[node name="Label" type="Label" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents3/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "REPORT_3_DESC"
+
+[node name="Contents4" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents"]
+visible = false
+custom_minimum_size = Vector2(450, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("7_wwu35")
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("8_vaqke")
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("9_pic1i")
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("10_mkogq")
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("11_5cr2j")
+
+[node name="TextureRect6" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("12_gyy81")
+
+[node name="TextureRect7" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("13_opfkt")
+
+[node name="Label" type="Label" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents4/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "REPORT_4_DESC"
+
+[node name="Contents5" type="PanelContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents5"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/Contents/Contents5/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("14_dtipv")
+
+[node name="ButtonContainer" type="VBoxContainer" parent="CanvasLayer/Main/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+script = SubResource("GDScript_b1cvt")
+
+[node name="CameraButton" type="Button" parent="CanvasLayer/Main/MarginContainer/ButtonContainer"]
+custom_minimum_size = Vector2(188, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+disabled = true
+text = "GAME_MENU_CAMERA"
+
+[node name="MoveButton" type="Button" parent="CanvasLayer/Main/MarginContainer/ButtonContainer"]
+custom_minimum_size = Vector2(188, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "GAME_MENU_MOVE"
+script = SubResource("GDScript_pyk0i")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Main/MarginContainer/ButtonContainer"]
+layout_mode = 2
+script = SubResource("GDScript_qar06")
+
+[node name="InfoButton" type="Button" parent="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer"]
+custom_minimum_size = Vector2(188, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GAME_MENU_INFO"
+
+[node name="InfoLabel" type="Label" parent="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+text = "+1"
 
 [node name="2DWorld" parent="." instance=ExtResource("3_pprbw")]
+visible = false
 
-[connection signal="button_down" from="Control/VBoxContainer/HBoxContainer2/LeftButton" to="Pioner" method="_on_left_button_button_down"]
-[connection signal="button_down" from="Control/VBoxContainer/HBoxContainer2/RightButton" to="Pioner" method="_on_right_button_button_down"]
+[node name="Ambient1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_xehno")
+volume_db = -25.01
+autoplay = true
+
+[node name="Ambient2" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamRandomizer_yyjah")
+volume_db = 6.559
+script = SubResource("GDScript_ae0wf")
+
+[node name="Timer" type="Timer" parent="Ambient2"]
+wait_time = 120.0
+autostart = true
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer2"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer2"]
+libraries = {
+"": SubResource("AnimationLibrary_q7drq")
+}
+autoplay = "Enter"
+
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PhotoTask/PhotoButton" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_photo_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/PlasmTask/PlasmButton" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_plasm_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/SiganlTask/SignalButton" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_signal_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/AudioTask/AudioButton" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_audio_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/RadiationTask/RadiationButton" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_radiation_button_button_down"]
+[connection signal="timeout" from="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer/ProcessTimer" to="CanvasLayer/Main/MarginContainer/CameraContainer/CameraAndButtons/ButtonsContainer" method="_on_process_timer_timeout"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/HBoxContainer2/LeftButton" to="Pioner" method="_on_left_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/CameraContainer/HBoxContainer2/RightButton" to="Pioner" method="_on_right_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer" method="_on_report_button_5_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5" method="_on_button_down"]
+[connection signal="timeout" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5/SceneTwoTimer" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton5" method="_on_scene_two_timer_timeout"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton4" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer" method="_on_report_button_4_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton3" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer" method="_on_report_button_3_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton2" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer" method="_on_report_button_2_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer/List/VBoxContainer/ReportButton1" to="CanvasLayer/Main/MarginContainer/InfoContainer/HBoxContainer" method="_on_report_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/CameraButton" to="CanvasLayer/Main/MarginContainer/ButtonContainer" method="_on_camera_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/CameraButton" to="2DWorld" method="_on_camera_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/MoveButton" to="CanvasLayer/Main/MarginContainer/ButtonContainer" method="_on_move_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/MoveButton" to="CanvasLayer/Main/MarginContainer/ButtonContainer/MoveButton" method="_on_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer/InfoButton" to="CanvasLayer/Main/MarginContainer/ButtonContainer" method="_on_signal_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer/InfoButton" to="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer" method="_on_info_button_button_down"]
+[connection signal="button_down" from="CanvasLayer/Main/MarginContainer/ButtonContainer/HBoxContainer/InfoButton" to="2DWorld" method="_on_info_button_button_down"]
+[connection signal="timeout" from="Ambient2/Timer" to="Ambient2" method="_on_timer_timeout"]

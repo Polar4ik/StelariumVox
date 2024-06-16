@@ -1,0 +1,257 @@
+[gd_scene load_steps=18 format=3 uid="uid://comjvbd6sb1ux"]
+
+[ext_resource type="PackedScene" uid="uid://dkfnk4kmdw4cl" path="res://assets/models/pioner.glb" id="1_iyi7q"]
+[ext_resource type="Texture2D" uid="uid://ck1epnajasxdo" path="res://assets/photo/logo.png" id="2_0c414"]
+[ext_resource type="FontFile" uid="uid://cshch2jsn18bi" path="res://assets/fonts/Vollkorn-VariableFont_wght.ttf" id="3_5fnso"]
+[ext_resource type="Texture2D" uid="uid://046ess3qrqfa" path="res://assets/photo/map.png" id="4_sds18"]
+[ext_resource type="AudioStream" uid="uid://4im5lf3xqfqd" path="res://assets/sounds/main_menu/main_menu_music.ogg" id="5_8sj2n"]
+
+[sub_resource type="Theme" id="Theme_4fryq"]
+Label/fonts/font = ExtResource("3_5fnso")
+
+[sub_resource type="Sky" id="Sky_mv0rq"]
+
+[sub_resource type="Environment" id="Environment_6utpu"]
+background_mode = 1
+background_color = Color(0.0313726, 0.0313726, 0.0627451, 1)
+sky = SubResource("Sky_mv0rq")
+
+[sub_resource type="Animation" id="Animation_nfoaa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_04rgn"]
+resource_name = "rot"
+length = 10.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 10),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 6.28319)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fylh3"]
+_data = {
+"RESET": SubResource("Animation_nfoaa"),
+"rot": SubResource("Animation_04rgn")
+}
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_66vo5"]
+viewport_path = NodePath("Node3D/SubViewport")
+
+[sub_resource type="GDScript" id="GDScript_bxwss"]
+script/source = "extends Button
+
+func _on_button_down() -> void:
+	get_tree().change_scene_to_file(\"res://scenes/enter.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_birrd"]
+script/source = "extends Button
+
+func _on_button_down() -> void:
+	$\"../../../../HowToPlay\".show()
+"
+
+[sub_resource type="GDScript" id="GDScript_rvfb2"]
+script/source = "extends Button
+
+func _on_button_down() -> void:
+	get_tree().quit()
+"
+
+[sub_resource type="GDScript" id="GDScript_qfgfw"]
+script/source = "extends Button
+
+var pointer := 1
+
+func _on_button_down() -> void:
+	pointer += 1
+	if pointer > 1:
+		pointer = 0
+	
+	if pointer == 0:
+		TranslationServer.set_locale(\"en\")
+	elif pointer == 1:
+		TranslationServer.set_locale(\"ru\")
+"
+
+[sub_resource type="GDScript" id="GDScript_566sq"]
+script/source = "extends Button
+
+func _on_button_down() -> void:
+	$\"../..\".hide()
+"
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_4fryq")
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Node3D"]
+environment = SubResource("Environment_6utpu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Node3D"]
+transform = Transform3D(0.702426, -0.429605, 0.567483, 1.2346e-08, 0.7973, 0.603584, -0.711756, -0.423973, 0.560044, 0, 0, 5)
+
+[node name="Pioner" type="Marker3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8217, 0, 0)
+
+[node name="pioner" parent="Node3D/Pioner" instance=ExtResource("1_iyi7q")]
+transform = Transform3D(0.964639, -0.257272, 0.0572981, 0.138395, 0.309378, -0.940814, 0.224319, 0.915475, 0.334044, 0, 0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D/Pioner"]
+root_node = NodePath("../pioner")
+libraries = {
+"": SubResource("AnimationLibrary_fylh3")
+}
+autoplay = "rot"
+
+[node name="SubViewport" type="SubViewport" parent="Node3D"]
+size = Vector2i(1200, 600)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="Node3D/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.19269, 15)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("ViewportTexture_66vo5")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 2
+texture = ExtResource("2_0c414")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 130)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 2
+
+[node name="PlayButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_5fnso")
+text = "MENU_PLAY"
+script = SubResource("GDScript_bxwss")
+
+[node name="HowToPlayButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_5fnso")
+text = "MENU_HOW_TO_PLAY"
+script = SubResource("GDScript_birrd")
+
+[node name="ExitButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_5fnso")
+text = "MENU_EXIT"
+script = SubResource("GDScript_rvfb2")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="LangButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_5fnso")
+text = "LANG_BUTTON"
+script = SubResource("GDScript_qfgfw")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Ver 1.1
+A game by Polar4ik"
+
+[node name="HowToPlay" type="CenterContainer" parent="."]
+visible = false
+layout_mode = 2
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 1175.0
+offset_bottom = 575.0
+
+[node name="PanelContainer" type="PanelContainer" parent="HowToPlay"]
+custom_minimum_size = Vector2(800, 390)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HowToPlay/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HowToPlay/PanelContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HowToPlay/PanelContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "HOW_TO_PLAY_DESC"
+
+[node name="TextureRect" type="TextureRect" parent="HowToPlay/PanelContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("4_sds18")
+
+[node name="ExitButton" type="Button" parent="HowToPlay/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("3_5fnso")
+text = "Выход"
+script = SubResource("GDScript_566sq")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_8sj2n")
+autoplay = true
+
+[connection signal="button_down" from="MarginContainer/VBoxContainer/VBoxContainer/PlayButton" to="MarginContainer/VBoxContainer/VBoxContainer/PlayButton" method="_on_button_down"]
+[connection signal="button_down" from="MarginContainer/VBoxContainer/VBoxContainer/HowToPlayButton" to="MarginContainer/VBoxContainer/VBoxContainer/HowToPlayButton" method="_on_button_down"]
+[connection signal="button_down" from="MarginContainer/VBoxContainer/VBoxContainer/ExitButton" to="MarginContainer/VBoxContainer/VBoxContainer/ExitButton" method="_on_button_down"]
+[connection signal="button_down" from="MarginContainer/VBoxContainer/VBoxContainer2/LangButton" to="MarginContainer/VBoxContainer/VBoxContainer2/LangButton" method="_on_button_down"]
+[connection signal="button_down" from="HowToPlay/PanelContainer/ExitButton" to="HowToPlay/PanelContainer/ExitButton" method="_on_button_down"]

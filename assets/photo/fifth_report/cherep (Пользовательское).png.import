@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cw5e0gt8ieq0p"
-path="res://.godot/imported/planet.png-edcc5407501d454d64c662278798a4e6.ctex"
+uid="uid://du3jod406b44b"
+path="res://.godot/imported/cherep (Пользовательское).png-ba008e20f444669aab0c6457c294854f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/planet.png"
-dest_files=["res://.godot/imported/planet.png-edcc5407501d454d64c662278798a4e6.ctex"]
+source_file="res://assets/photo/fifth_report/cherep (Пользовательское).png"
+dest_files=["res://.godot/imported/cherep (Пользовательское).png-ba008e20f444669aab0c6457c294854f.ctex"]
 
 [params]
 

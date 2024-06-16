@@ -1,0 +1,55 @@
+key,en,ru
+MENU_PLAY,Play,Играть
+MENU_HOW_TO_PLAY,How to play,Как играть
+MENU_EXIT,Exit,Выход
+GAME_MENU_CAMERA,Camera,Камера
+GAME_MENU_MOVE,Move,Движение
+GAME_MENU_INFO,Info,Информация
+TASK_PHOTO,Task Photo,Тест Фото
+TASK_PLASMA,Task Plasma,Тест Плазмы
+TASK_SIGNAL,Task Signal,Тест Сигнала
+TASK_AUDIO,Task Audio,Тест Аудио
+TASK_RADIATION,Task Radiation,Тест Радиации
+ROTATE_LEFT,Left,Лево
+ROTATE_RIGHT,Right,Право
+HOW_TO_PLAY_DESC,"and press the space bar.
+
+For tests you need to get close enough to the celestial body and go to the menu ""Camera"".
+For the photo the body should be in the centre of the lens.
+After all the tests have been carried out, you must go to the ""Information"" menu and open the report to find out
+to find out where to go next.
+
+Map of celestial bodies:","Для перемещения нужно зайти в меню ""Движение"" нажать на точку куда должен переместиться игрок
+и нажать пробел.
+
+Для тестов необходимо приблизиться достатосно близко к небесному телу и зайти в меню ""Камера"".
+Для фото тело должно находитсяв центре обьектива.
+После проведении всех тестов необходимо зайти в меню ""Информация"" и открыть отчёт для того что бы 
+узнать куда нужно далее двигаться.
+
+Карта небесных тел:"
+REPORT_1,Report №1,Отчёт №1
+REPORT_1_DESC,"No signals detected. Information has been sent.
+Proceed to Kelme","Сигналы не обнаружены. Информация отправлена
+Двигайтесь к Kelme"
+REPORT_2,Report №2,Отчёт №2
+REPORT_2_DESC,"No signals detected. Information has been sent.
+Proceed to Keli","Сигналы не обнаружены. Информация отправлена
+Двигайтесь к Keli"
+REPORT_3,Report №3,Отчёт №3
+REPORT_3_DESC,Move on to Ila.,Двигайтесь к Ila
+REPORT_4,Report №4,Отчёт №4
+REPORT_4_DESC,Move on to Säzema,Двигайтесь к Säzema
+REPORT_5,Report №5,Отчёт №5
+ENTER_TEXT,"Humanity has always been curious. It was this passion for exploring the world that led us to space.
+Humanity knew little about the planets beyond the Noida Belt. That's why the Pioneer-10 spacecraft was built and launched.","Человечество всегда было любопытным. Это страсть к изучению мира привело нас к космосу.
+Человечество мало знало о планетах за поясом Нойды. Для этого был создан и запущен аппарат ""Пионер-10"""
+EXIT_TEXT,"Contact with Pioneer-10 has been lost. As will be seen from the Hassy telescope, Pioneer-10 was swallowed by Kelme...
+Pioneer-10 has discovered that celestial bodies beyond the Noida Belt have minds.","Связь с ""Пионер-10"" была потеряна. Как будет замечено с телескопа ""Хасси"", ""Пионер-10"" был поглащён Кельме...
+""Пионер-10"" открыл то что у небесных тел за поясом Нойды есть разум."
+ENTER_DATE,17 October 1970,17 октября 1970 года
+EXIT_DATE,15 October 1975,15 октября 1975 года
+LANG_BUTTON,English,Русский
+GUIDE_TEXT,"Your task is to fly to Ei and study it with the help of instruments on board the spacecraft.
+It is necessary to stay at a short distance from the celestial body so that the satellite does not crash into the surface.","Ваша задача подлететь к Ei и изучить её с помощью инструментов на борту космического аппарата.
+Необходимо оставаться на небольшом растоянии от небесного тела что бы спутник не разбился об поверхность"

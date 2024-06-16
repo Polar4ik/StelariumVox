@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqp42yhpk6epc"
-path="res://.godot/imported/player.png-e1eaffe0873063c60a0d0b322e4d87d9.ctex"
+uid="uid://8t0nawlqk320"
+path="res://.godot/imported/NASM-NASM2016-00083 (Телефон).jpg-bdef2f9814002942fdab7a7261e40fd0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/player.png"
-dest_files=["res://.godot/imported/player.png-e1eaffe0873063c60a0d0b322e4d87d9.ctex"]
+source_file="res://assets/photo/third_report/NASM-NASM2016-00083 (Телефон).jpg"
+dest_files=["res://.godot/imported/NASM-NASM2016-00083 (Телефон).jpg-bdef2f9814002942fdab7a7261e40fd0.ctex"]
 
 [params]
 

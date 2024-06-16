@@ -1,27 +1,134 @@
-[gd_scene load_steps=5 format=3 uid="uid://pejovvy2eq6f"]
+[gd_scene load_steps=21 format=3 uid="uid://pejovvy2eq6f"]
 
-[sub_resource type="Sky" id="Sky_mv0rq"]
+[ext_resource type="Script" path="res://scripts/planet_rotation.gd" id="1_dtija"]
+[ext_resource type="Texture2D" uid="uid://c52s7mje5mnep" path="res://assets/sprites/textures/Ei_surface.png" id="1_m7rvg"]
+[ext_resource type="Texture2D" uid="uid://c2ltjksefswwu" path="res://assets/sprites/textures/Kelme_surface.png" id="3_kmga1"]
+[ext_resource type="Texture2D" uid="uid://2qn0ltuwrkjl" path="res://assets/sprites/textures/Keli_surface.png" id="4_k5ju7"]
+[ext_resource type="Texture2D" uid="uid://clekg80ikm5iq" path="res://assets/sprites/textures/Illa_surface.png" id="5_mwr4w"]
+[ext_resource type="Texture2D" uid="uid://csb32p0nolfae" path="res://assets/sprites/textures/Sazema_surface.png" id="6_0awvl"]
+
+[sub_resource type="Sky" id="Sky_iiptl"]
 
 [sub_resource type="Environment" id="Environment_jlc53"]
 background_mode = 1
 background_color = Color(0.0313726, 0.0313726, 0.0627451, 1)
-sky = SubResource("Sky_mv0rq")
+sky = SubResource("Sky_iiptl")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_156ep"]
+albedo_texture = ExtResource("1_m7rvg")
 
 [sub_resource type="SphereMesh" id="SphereMesh_eurtv"]
 radius = 12.5
 height = 25.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_b8qlg"]
+radius = 12.6484
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0qyxw"]
+albedo_texture = ExtResource("3_kmga1")
+
+[sub_resource type="SphereMesh" id="SphereMesh_myyy1"]
+radius = 62.5
+height = 125.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_j0pls"]
+radius = 63.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cp23k"]
+albedo_texture = ExtResource("4_k5ju7")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_2gl62"]
+radius = 13.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y6d50"]
+albedo_texture = ExtResource("5_mwr4w")
+
+[sub_resource type="SphereMesh" id="SphereMesh_tberl"]
+radius = 15.0
+height = 30.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7imw5"]
+albedo_texture = ExtResource("6_0awvl")
+
+[sub_resource type="SphereMesh" id="SphereMesh_wf3m5"]
+radius = 15.0
+height = 30.0
 
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_jlc53")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="Ei" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1000)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Ei" type="MeshInstance3D" parent="Ei"]
 material_override = SubResource("StandardMaterial3D_156ep")
 mesh = SubResource("SphereMesh_eurtv")
+skeleton = NodePath("../..")
+script = ExtResource("1_dtija")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ei"]
+shape = SubResource("SphereShape3D_b8qlg")
+
+[node name="Kelme" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 575, 0, -1900)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Kelme" type="MeshInstance3D" parent="Kelme"]
+material_override = SubResource("StandardMaterial3D_0qyxw")
+mesh = SubResource("SphereMesh_myyy1")
+skeleton = NodePath("../..")
+script = ExtResource("1_dtija")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Kelme"]
+shape = SubResource("SphereShape3D_j0pls")
+
+[node name="Keli" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1247, 0, -1286)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Keli" type="MeshInstance3D" parent="Keli"]
+material_override = SubResource("StandardMaterial3D_cp23k")
+mesh = SubResource("SphereMesh_eurtv")
+skeleton = NodePath("../..")
+script = ExtResource("1_dtija")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Keli"]
+shape = SubResource("SphereShape3D_2gl62")
+
+[node name="Ila" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2088, 0, -2562)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Ila" type="MeshInstance3D" parent="Ila"]
+material_override = SubResource("StandardMaterial3D_y6d50")
+mesh = SubResource("SphereMesh_tberl")
+skeleton = NodePath("../..")
+script = ExtResource("1_dtija")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ila"]
+shape = SubResource("SphereShape3D_2gl62")
+
+[node name="Sazema" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 714, 0, -3859)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Sazema" type="MeshInstance3D" parent="Sazema"]
+material_override = SubResource("StandardMaterial3D_7imw5")
+mesh = SubResource("SphereMesh_wf3m5")
+skeleton = NodePath("../..")
+script = ExtResource("1_dtija")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sazema"]
+shape = SubResource("SphereShape3D_2gl62")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.907499, -0.0685189, 0.414428, 0, 0.986606, 0.163119, -0.420054, -0.148031, 0.895344, 0, 3.98366, 9.48877)
+light_energy = 0.515
